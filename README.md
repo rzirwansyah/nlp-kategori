@@ -112,3 +112,28 @@ Strategi ini memecah tugas klasifikasi kategori pajak menjadi beberapa tahap, me
 - **Keamanan & Audit**: Simpan audit trail prediksi per tahap untuk kepatuhan regulasi.
 
 Strategi ini memberikan kerangka kerja terukur yang memanfaatkan struktur taksonomi pajak, memungkinkan peningkatan akurasi dan interpretabilitas sekaligus menjaga latensi inference yang dapat diterima.
+
+## Preprocessing Excel Produk
+
+Gunakan skrip `scripts/preprocess_input_excel.py` untuk membersihkan kolom teks pada `input.xlsx` sebelum masuk ke pipeline pelatihan.
+
+### Instalasi dependensi
+
+```bash
+pip install -r requirements.txt
+```
+
+### Menjalankan skrip
+
+```bash
+python scripts/preprocess_input_excel.py input.xlsx cleaned_input.xlsx --columns product_name product_description
+```
+
+Skrip akan:
+
+1. Menghapus tag HTML, URL, dan emoji.
+2. Melakukan normalisasi ejaan sederhana (mis. `nggak` → `tidak`, `yg` → `yang`).
+3. Menerapkan stemming ringan menggunakan Sastrawi (token ≤3 huruf tidak distem untuk menjaga konteks).
+4. Menyimpan hasilnya ke berkas Excel baru dengan kolom tambahan `<nama_kolom>_clean` yang berisi teks hasil pembersihan.
+
+Jika nama kolom berbeda, ubah argumen `--columns`. Bila parameter tersebut tidak diberikan, skrip akan mencoba mendeteksi kolom umum seperti `product_name`, `nama`, `product_description`, `deskripsi`, atau `description`.
