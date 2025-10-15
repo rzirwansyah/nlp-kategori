@@ -8,7 +8,14 @@ from pathlib import Path
 from typing import Iterable
 
 import pandas as pd
-from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+
+try:
+    from nlp_id.lemmatizer import Lemmatizer
+except ImportError as exc:  # pragma: no cover - guard for missing optional dependency
+    raise ImportError(
+        "Package 'nlp-id' is required for Indonesian lemmatization. Please install it via"
+        " `pip install nlp-id`."
+    ) from exc
 
 
 HTML_TAG_RE = re.compile(r"<[^>]+>")
@@ -44,8 +51,7 @@ SPELLING_MAP = {
     "blm": "belum",
 }
 
-FACTORY = StemmerFactory()
-STEMMER = FACTORY.create_stemmer()
+LEMMATIZER = Lemmatizer()
 
 
 def normalize_spelling(text: str) -> str:
@@ -68,15 +74,15 @@ def remove_noise(text: str) -> str:
     return text.strip()
 
 
-def light_stem(text: str) -> str:
+def light_lemma(text: str) -> str:
     tokens = text.split()
-    stemmed_tokens = []
+    lemmatized_tokens = []
     for token in tokens:
         if len(token) <= 3:
-            stemmed_tokens.append(token)
+            lemmatized_tokens.append(token)
         else:
-            stemmed_tokens.append(STEMMER.stem(token))
-    return " ".join(stemmed_tokens)
+            lemmatized_tokens.append(LEMMATIZER.lemmatize(token))
+    return " ".join(lemmatized_tokens)
 
 
 def clean_text(text: str) -> str:
@@ -87,7 +93,7 @@ def clean_text(text: str) -> str:
     text = normalize_spelling(text)
     if not text:
         return text
-    text = light_stem(text)
+    text = light_lemma(text)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 
@@ -139,7 +145,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Normalize Indonesian product text in Excel files by cleaning HTML/emoji and applying "
-            "light stemming with Sastrawi."
+            "light lemmatization with the nlp-id library."
         )
     )
     parser.add_argument("input", type=Path, help="Path to the input Excel file (e.g., input.xlsx)")

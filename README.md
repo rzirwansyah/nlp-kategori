@@ -26,7 +26,7 @@ Strategi ini memecah tugas klasifikasi kategori pajak menjadi beberapa tahap, me
 
 ### 2. Pipeline Data
 1. **Pre-processing Bahasa Indonesia**
-   - Normalisasi ejaan, hilangkan HTML/emoji, lakukan stemming ringan atau lemmatization menggunakan *Sastrawi*.
+   - Normalisasi ejaan, hilangkan HTML/emoji, lakukan stemming ringan atau lemmatization menggunakan pustaka *nlp-id*.
    - Tangani campuran bahasa dengan deteksi bahasa; jika non-Indonesian, terjemahkan otomatis atau rute ke model khusus.
 
 2. **Augmentasi Data**
@@ -133,7 +133,7 @@ Skrip akan:
 
 1. Menghapus tag HTML, URL, dan emoji.
 2. Melakukan normalisasi ejaan sederhana (mis. `nggak` → `tidak`, `yg` → `yang`).
-3. Menerapkan stemming ringan menggunakan Sastrawi (token ≤3 huruf tidak distem untuk menjaga konteks).
+3. Menerapkan lemmatization ringan menggunakan `nlp-id` (token ≤3 huruf tidak diubah untuk menjaga konteks).
 4. Menyimpan hasilnya ke berkas Excel baru dengan kolom tambahan `<nama_kolom>_clean` yang berisi teks hasil pembersihan.
 
 Jika nama kolom berbeda, ubah argumen `--columns`. Bila parameter tersebut tidak diberikan, skrip akan mencoba mendeteksi kolom umum seperti `product_name`, `nama`, `product_description`, `deskripsi`, atau `description`.
